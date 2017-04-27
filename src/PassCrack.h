@@ -15,10 +15,10 @@ void nullEntireString(char brutePassword[]);
 
 void doPasswordCrack(const char userPassword[], char brutePassword[]);
 
-int assignPasswordBasedOnCount(char brutePassword[], int count, int length);
+int assignPasswordBasedOnCount(char brutePassword[], uint64_t count, int length);
 
 char convertNumberToCharacter(int number);
 
-bool isStringsEqual(const char userPassword[], char brutePassword[]);
+bool isStringsEqual(const char userPassword[], const char brutePassword[]);
 
 #endif /* PASS_CRACK_H */

@@ -1,7 +1,7 @@
 /*
  * Bailey Thompson
- * Pass Crack (1.0.0)
- * 23 April 2017
+ * Pass Crack (1.0.1)
+ * 26 April 2017
  *
  * Cracks a password using brute force. Length of the password which is being computed starts at one, and every
  * character combination of that length is computed. If no combination matches the password in which the user entered,
@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdint.h>
 #include "PassCrack.h"
 
 #define PASSWORD_BUFFER 100
@@ -25,7 +26,7 @@ int main(void) {
     char userPassword[PASSWORD_BUFFER];
     const bool isPassWordGetSuccess = isGetUserPasswordSuccessful(userPassword, sizeof userPassword);
     if (!isPassWordGetSuccess) {
-        fprintf(stderr, "Error: user password input failed!\n");
+        fprintf(stderr, "Error: user password input failed!!\n");
         return -1;
     }
     removeBackspace(userPassword);
@@ -58,7 +59,7 @@ void nullEntireString(char brutePassword[]) {
 void doPasswordCrack(const char userPassword[], char brutePassword[]) {
     printf("Starting password cracking.\n");
     int length = 1;
-    long i = 0;
+    uint64_t i = 0;
     while (length < PASSWORD_BUFFER) {
         const int tempLength = assignPasswordBasedOnCount(brutePassword, i, length);
         if (tempLength > length) {
@@ -74,10 +75,10 @@ void doPasswordCrack(const char userPassword[], char brutePassword[]) {
     }
 }
 
-int assignPasswordBasedOnCount(char brutePassword[], int count, int length) {
+int assignPasswordBasedOnCount(char brutePassword[], uint64_t count, int length) {
     int index = 0;
     while (count != 0 || index < length) {
-        const int currentCount = count % CHARACTER_AMOUNT;
+        const int currentCount = (int) (count % CHARACTER_AMOUNT);
         count /= CHARACTER_AMOUNT;
         brutePassword[index] = convertNumberToCharacter(currentCount);
         index++;
@@ -100,10 +101,10 @@ char convertNumberToCharacter(int number) {
     if (number < NUMBERS) {
         return (char) (ASCII_ZERO + number);
     }
-    fprintf(stderr, "Error: number was not in bounds.\n");
+    fprintf(stderr, "Error: number was not in bounds!!\n");
     return '\0';
 }
 
-bool isStringsEqual(const char userPassword[], char brutePassword[]) {
+bool isStringsEqual(const char userPassword[], const char brutePassword[]) {
     return strcmp(userPassword, brutePassword) == 0;
 }
