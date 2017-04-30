@@ -5,11 +5,7 @@
 #ifndef PASS_CRACK_H
 #define PASS_CRACK_H
 
-int main(void);
-
-bool isGetUserPasswordSuccessful(char userPassword[], int size);
-
-void removeBackspace(char userPassword[]);
+int main();
 
 void nullEntireString(char brutePassword[]);
 
