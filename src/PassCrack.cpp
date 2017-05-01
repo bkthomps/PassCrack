@@ -1,7 +1,7 @@
 /*
  * Bailey Thompson
- * Pass Crack (1.0.2)
- * 30 April 2017
+ * Pass Crack (1.0.3)
+ * 1 May 2017
  *
  * Cracks a password using brute force. Length of the password which is being computed starts at one, and every
  * character combination of that length is computed. If no combination matches the password in which the user entered,
@@ -24,21 +24,14 @@ int main() {
     char userPassword[PASSWORD_BUFFER];
     std::cout << "Input password to be cracked: ";
     std::cin.getline(userPassword, PASSWORD_BUFFER);
+    doPasswordCrack(userPassword);
+    std::cerr << "Error: should never return from main!!" << std::endl;
+}
+
+void doPasswordCrack(const char userPassword[]) {
+    std::cout << "Starting password cracking." << std::endl;
     char brutePassword[PASSWORD_BUFFER];
     nullEntireString(brutePassword);
-    doPasswordCrack(userPassword, brutePassword);
-    std::cout << "Your password has been cracked, it was: " << brutePassword << std::endl;
-    return 0;
-}
-
-void nullEntireString(char brutePassword[]) {
-    for (int i = 0; i < PASSWORD_BUFFER; i++) {
-        brutePassword[i] = '\0';
-    }
-}
-
-void doPasswordCrack(const char userPassword[], char brutePassword[]) {
-    std::cout << "Starting password cracking." << std::endl;
     int length = 1;
     uint64_t i = 0;
     while (length < PASSWORD_BUFFER) {
@@ -50,9 +43,16 @@ void doPasswordCrack(const char userPassword[], char brutePassword[]) {
             assignPasswordBasedOnCount(brutePassword, i, length);
         }
         if (isStringsEqual(userPassword, brutePassword)) {
-            return;
+            std::cout << "Your password was cracked, it was: " << brutePassword << std::endl;
+            exit(0);
         }
         i++;
+    }
+}
+
+void nullEntireString(char brutePassword[]) {
+    for (int i = 0; i < PASSWORD_BUFFER; i++) {
+        brutePassword[i] = '\0';
     }
 }
 

@@ -7,9 +7,9 @@
 
 int main();
 
-void nullEntireString(char brutePassword[]);
+void doPasswordCrack(const char userPassword[]);
 
-void doPasswordCrack(const char userPassword[], char brutePassword[]);
+void nullEntireString(char brutePassword[]);
 
 int assignPasswordBasedOnCount(char brutePassword[], uint64_t count, int length);
 
