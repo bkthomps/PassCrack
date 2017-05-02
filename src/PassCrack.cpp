@@ -1,7 +1,7 @@
 /*
  * Bailey Thompson
- * Pass Crack (1.0.3)
- * 1 May 2017
+ * Pass Crack (1.1.0)
+ * 2 May 2017
  *
  * Cracks a password using brute force. Length of the password which is being computed starts at one, and every
  * character combination of that length is computed. If no combination matches the password in which the user entered,
@@ -13,6 +13,9 @@
 
 #include <iostream>
 #include <cstring>
+#include <cmath>
+#include <vector>
+#include <thread>
 #include "PassCrack.h"
 
 const int PASSWORD_BUFFER = 100;
@@ -29,24 +32,46 @@ int main() {
 }
 
 void doPasswordCrack(const char userPassword[]) {
+    int concurrentThreadsSupported = std::thread::hardware_concurrency();
+    if (concurrentThreadsSupported == 0) {
+        const int DEFAULT_THREADS = 4;
+        concurrentThreadsSupported = DEFAULT_THREADS;
+    }
+    std::cout << "Your system supports " << concurrentThreadsSupported << " concurrent threads." << std::endl;
     std::cout << "Starting password cracking." << std::endl;
+    startThreads(userPassword, concurrentThreadsSupported);
+    std::cerr << "Error: startThreads should never return!!" << std::endl;
+}
+
+void startThreads(const char userPassword[], int concurrentThreadsSupported) {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < concurrentThreadsSupported; i++) {
+        threads.push_back(std::thread(thread, userPassword, i, concurrentThreadsSupported));
+    }
+    for (auto &thread : threads) {
+        thread.join();
+    }
+}
+
+void thread(const char userPassword[], int threadId, int amountOfThreads) {
     char brutePassword[PASSWORD_BUFFER];
     nullEntireString(brutePassword);
     int length = 1;
-    uint64_t i = 0;
+    uint64_t count = minimumCount(threadId, amountOfThreads, length) - 1;
+    uint64_t maxCount = maximumCount(threadId, amountOfThreads, length);
     while (length < PASSWORD_BUFFER) {
-        const int tempLength = assignPasswordBasedOnCount(brutePassword, i, length);
-        if (tempLength > length) {
-            std::cout << "Length is now " << tempLength << " characters." << std::endl;
-            length = tempLength;
-            i = 0;
-            assignPasswordBasedOnCount(brutePassword, i, length);
+        assignPasswordBasedOnCount(brutePassword, count, length);
+        if (count >= maxCount) {
+            length++;
+            count = minimumCount(threadId, amountOfThreads, length) - 1;
+            maxCount = maximumCount(threadId, amountOfThreads, length);
+            assignPasswordBasedOnCount(brutePassword, count, length);
         }
         if (isStringsEqual(userPassword, brutePassword)) {
-            std::cout << "Your password was cracked, it was: " << brutePassword << std::endl;
+            std::cout << "Thread " << threadId + 1 << " - Password was cracked, it was: " << brutePassword << std::endl;
             exit(0);
         }
-        i++;
+        count++;
     }
 }
 
@@ -56,7 +81,23 @@ void nullEntireString(char brutePassword[]) {
     }
 }
 
-int assignPasswordBasedOnCount(char brutePassword[], uint64_t count, int length) {
+uint64_t minimumCount(int threadId, int amountOfThreads, int length) {
+    if (threadId == 0) {
+        return 1;
+    }
+    return maximumCount(threadId - 1, amountOfThreads, length) + 1;
+}
+
+uint64_t maximumCount(int threadId, int amountOfThreads, int length) {
+    const int indexCount = highestCount(length) * (threadId + 1) / amountOfThreads;
+    return (uint64_t) ((threadId == amountOfThreads - 1) ? indexCount : indexCount + 1);
+}
+
+int highestCount(int length) {
+    return (int) pow(CHARACTER_AMOUNT, length);
+}
+
+void assignPasswordBasedOnCount(char brutePassword[], uint64_t count, int length) {
     int index = 0;
     while (count != 0 || index < length) {
         const int currentCount = (int) (count % CHARACTER_AMOUNT);
@@ -64,7 +105,6 @@ int assignPasswordBasedOnCount(char brutePassword[], uint64_t count, int length)
         brutePassword[index] = convertNumberToCharacter(currentCount);
         index++;
     }
-    return index;
 }
 
 char convertNumberToCharacter(int number) {
