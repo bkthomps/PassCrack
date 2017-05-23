@@ -1,7 +1,7 @@
 /*
  * Bailey Thompson
- * Pass Crack (1.1.0)
- * 2 May 2017
+ * Pass Crack (1.1.1)
+ * 23 May 2017
  *
  * Cracks a password using brute force. Length of the password which is being computed starts at one, and every
  * character combination of that length is computed. If no combination matches the password in which the user entered,
@@ -108,19 +108,16 @@ void assignPasswordBasedOnCount(char brutePassword[], uint64_t count, int length
 }
 
 char convertNumberToCharacter(int number) {
-    const int ASCII_LOWER_CASE_A = 97;
-    const int ASCII_UPPER_CASE_A = 65;
-    const int ASCII_ZERO = 48;
     if (number < LETTERS) {
-        return (char) (ASCII_LOWER_CASE_A + number);
+        return 'a' + (char) number;
     }
     number -= LETTERS;
     if (number < LETTERS) {
-        return (char) (ASCII_UPPER_CASE_A + number);
+        return 'A' + (char) number;
     }
     number -= LETTERS;
     if (number < NUMBERS) {
-        return (char) (ASCII_ZERO + number);
+        return '0' + (char) number;
     }
     std::cerr << "Error: number was not in bounds!!" << std::endl;
     return '\0';
