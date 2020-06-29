@@ -9,7 +9,7 @@ int main();
 
 void doPasswordCrack(const char userPassword[]);
 
-void startThreads(const char userPassword[], int concurrentThreadsSupported);
+void startThreads(const char userPassword[], unsigned int concurrentThreadsSupported);
 
 void thread(const char userPassword[], int threadId, int amountOfThreads);
 

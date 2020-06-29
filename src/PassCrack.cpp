@@ -32,10 +32,9 @@ int main() {
 }
 
 void doPasswordCrack(const char userPassword[]) {
-    int concurrentThreadsSupported = std::thread::hardware_concurrency();
+    unsigned int concurrentThreadsSupported = std::thread::hardware_concurrency();
     if (concurrentThreadsSupported == 0) {
-        const int DEFAULT_THREADS = 4;
-        concurrentThreadsSupported = DEFAULT_THREADS;
+        concurrentThreadsSupported = 4;
     }
     std::cout << "Your system supports " << concurrentThreadsSupported << " concurrent threads." << std::endl;
     std::cout << "Starting password cracking." << std::endl;
@@ -43,10 +42,10 @@ void doPasswordCrack(const char userPassword[]) {
     std::cerr << "Error: startThreads should never return!!" << std::endl;
 }
 
-void startThreads(const char userPassword[], int concurrentThreadsSupported) {
+void startThreads(const char userPassword[], unsigned int concurrentThreadsSupported) {
     std::vector<std::thread> threads;
-    for (int i = 0; i < concurrentThreadsSupported; i++) {
-        threads.push_back(std::thread(thread, userPassword, i, concurrentThreadsSupported));
+    for (unsigned int i = 0; i < concurrentThreadsSupported; i++) {
+        threads.emplace_back(std::thread(thread, userPassword, i, concurrentThreadsSupported));
     }
     for (auto &thread : threads) {
         thread.join();
@@ -109,15 +108,15 @@ void assignPasswordBasedOnCount(char brutePassword[], uint64_t count, int length
 
 char convertNumberToCharacter(int number) {
     if (number < LETTERS) {
-        return 'a' + (char) number;
+        return (char) (number + 'a');
     }
     number -= LETTERS;
     if (number < LETTERS) {
-        return 'A' + (char) number;
+        return (char) (number + 'A');
     }
     number -= LETTERS;
     if (number < NUMBERS) {
-        return '0' + (char) number;
+        return (char) (number + '0');
     }
     std::cerr << "Error: number was not in bounds!!" << std::endl;
     return '\0';
