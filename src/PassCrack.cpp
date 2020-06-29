@@ -1,7 +1,7 @@
 /*
  * Bailey Thompson
- * Pass Crack (1.1.1)
- * 23 May 2017
+ * Pass Crack
+ * Version 1.1.2
  *
  * Cracks a password using brute force. Length of the password which is being computed starts at one, and every
  * character combination of that length is computed. If no combination matches the password in which the user entered,
